@@ -1,0 +1,247 @@
+<!DOCTYPE CrossStudio_Project_File>
+<solution Name="sd-card_test" version="2" target="8">
+  <configuration
+    Name="Debug"
+    c_preprocessor_definitions="DEBUG"
+    gcc_debugging_level="Level 3"
+    gcc_omit_frame_pointer="Yes"
+    gcc_optimization_level="None" />
+  <configuration
+    Name="Release"
+    c_preprocessor_definitions="NDEBUG"
+    gcc_debugging_level="Level 2"
+    gcc_omit_frame_pointer="Yes"
+    gcc_optimization_level="Level 2 balanced" />
+  <project Name="sd-card_test">
+    <configuration
+      LIBRARY_IO_TYPE="RTT"
+      Name="Common"
+      Target="STM32F407VETx"
+      arm_architecture="v7EM"
+      arm_compiler_variant="gcc"
+      arm_core_type="Cortex-M4"
+      arm_endian="Little"
+      arm_fp_abi="Hard"
+      arm_fpu_type="FPv4-SP-D16"
+      arm_linker_heap_size="1024"
+      arm_linker_process_stack_size="0"
+      arm_linker_stack_size="2048"
+      arm_linker_variant="SEGGER"
+      arm_simulator_memory_simulation_parameter="ROM;0x08000000;0x00080000;RAM;0x10000000;0x00010000;RAM;0x20000000;0x00020000"
+      arm_target_device_name="STM32F407VE"
+      arm_target_interface_type="SWD"
+      c_preprocessor_definitions="ARM_MATH_CM4;STM32F407xx;__STM32F407_SUBFAMILY;__STM32F4XX_FAMILY"
+      c_user_include_directories="$(ProjectDir)/CMSIS_5/CMSIS/Core/Include;$(ProjectDir)/STM32F4xx/Device/Include"
+      debug_register_definition_file="$(ProjectDir)/STM32F407_Registers.xml"
+      debug_stack_pointer_start="__stack_end__"
+      debug_start_from_entry_point_symbol="Yes"
+      debug_target_connection="J-Link"
+      gcc_entry_point="Reset_Handler"
+      link_linker_script_file="$(ProjectDir)/STM32F4xx_Flash_CCM.icf"
+      linker_memory_map_file="$(ProjectDir)/STM32F407VETx_MemoryMap.xml"
+      linker_output_format="hex"
+      linker_printf_fp_enabled="Float"
+      macros="DeviceHeaderFile=$(PackagesDir)/STM32F4xx/Device/Include/stm32f4xx.h;DeviceSystemFile=$(PackagesDir)/STM32F4xx/Device/Source/system_stm32f4xx.c;DeviceVectorsFile=$(PackagesDir)/STM32F4xx/Source/stm32f407xx_Vectors.s;DeviceFamily=STM32F4xx;DeviceSubFamily=STM32F407;Target=STM32F407VETx"
+      project_directory=""
+      project_type="Executable"
+      target_reset_script="Reset();" />
+    <configuration
+      Name="Debug"
+      c_user_include_directories=".;$(ProjectDir)/lib/inc/;$(ProjectDir)/lib/SD/;$(ProjectDir)/lib/STM32F4XX_SPL/inc/;$(ProjectDir)/lib/fatfs/"
+      debug_target_connection="GDB Server"
+      gdb_server_allow_memory_access_during_execution="Yes"
+      gdb_server_autostart_server="No"
+      gdb_server_command_line=""
+      gdb_server_ignore_checksum_errors="No"
+      gdb_server_port="3333"
+      gdb_server_register_access="General and Individual"
+      gdb_server_reset_command="reset halt"
+      gdb_server_type="OpenOCD" />
+    <folder Name="CMSIS Files">
+      <file file_name="STM32F4xx/Device/Include/stm32f4xx.h" />
+      <file file_name="STM32F4xx/Device/Source/system_stm32f4xx.c">
+        <configuration
+          Name="Common"
+          default_code_section=".init"
+          default_const_section=".init_rodata" />
+      </file>
+    </folder>
+    <folder Name="lib">
+      <folder Name="fatfs">
+        <file file_name="lib/fatfs/diskio.c" />
+        <file file_name="lib/fatfs/diskio.h" />
+        <file file_name="lib/fatfs/ff.c" />
+        <file file_name="lib/fatfs/ff.h" />
+        <file file_name="lib/fatfs/ffconf.h" />
+        <file file_name="lib/fatfs/ffsystem.c" />
+        <file file_name="lib/fatfs/ffunicode.c" />
+      </folder>
+      <folder Name="inc">
+        <file file_name="lib/inc/delay.h" />
+        <file file_name="lib/inc/gpio.h" />
+        <file file_name="lib/inc/usart.h" />
+      </folder>
+      <folder Name="SD">
+        <file file_name="lib/SD/sdcard.c" />
+        <file file_name="lib/SD/sdcard.h" />
+      </folder>
+      <folder Name="src">
+        <file file_name="lib/src/delay.c" />
+        <file file_name="lib/src/gpio.c" />
+        <file file_name="lib/src/RCC_init.c" />
+        <file file_name="lib/src/usart.c" />
+      </folder>
+      <folder Name="STM32F4XX_SPL">
+        <folder Name="inc">
+          <file file_name="lib/STM32F4XX_SPL/inc/misc.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_adc.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_can.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_cec.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_crc.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_cryp.h">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_dac.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_dbgmcu.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_dcmi.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_dfsdm.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_dma.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_dma2d.h">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_dsi.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_exti.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_flash.h">
+            <configuration Name="Debug" build_exclude_from_build="No" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_flash_ramfunc.h">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_fmc.h">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_fmpi2c.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_fsmc.h">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_gpio.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_hash.h">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_i2c.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_iwdg.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_lptim.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_ltdc.h">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_pwr.h">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_qspi.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_rcc.h">
+            <configuration Name="Debug" build_exclude_from_build="No" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_rng.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_rtc.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_sai.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_sdio.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_spdifrx.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_spi.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_syscfg.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_tim.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_usart.h" />
+          <file file_name="lib/STM32F4XX_SPL/inc/stm32f4xx_wwdg.h" />
+        </folder>
+        <folder Name="src">
+          <file file_name="lib/STM32F4XX_SPL/src/misc.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_adc.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_can.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_cec.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_crc.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_cryp.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_cryp_aes.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_cryp_des.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_cryp_tdes.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_dac.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_dbgmcu.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_dcmi.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_dfsdm.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_dma.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_dma2d.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_dsi.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_exti.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_flash.c">
+            <configuration Name="Debug" build_exclude_from_build="No" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_flash_ramfunc.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_fmc.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_fmpi2c.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_fsmc.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_gpio.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_hash.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_hash_md5.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_hash_sha1.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_i2c.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_iwdg.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_lptim.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_ltdc.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_pwr.c">
+            <configuration Name="Debug" build_exclude_from_build="Yes" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_qspi.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_rcc.c">
+            <configuration Name="Debug" build_exclude_from_build="No" />
+          </file>
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_rng.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_rtc.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_sai.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_sdio.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_spdifrx.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_spi.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_syscfg.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_tim.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_usart.c" />
+          <file file_name="lib/STM32F4XX_SPL/src/stm32f4xx_wwdg.c" />
+        </folder>
+      </folder>
+    </folder>
+    <folder Name="Script Files">
+      <file file_name="STM32F4xx/Scripts/STM32F4xx_Target.js">
+        <configuration Name="Common" file_type="Reset Script" />
+      </file>
+    </folder>
+    <folder Name="System Files">
+      <file file_name="SEGGER_THUMB_Startup.s" />
+      <file file_name="STM32F4xx/Source/stm32f407xx_Vectors.s">
+        <configuration Name="Common" file_type="Assembly" />
+      </file>
+      <file file_name="STM32F4xx/Source/STM32F4xx_Startup.s" />
+    </folder>
+    <file file_name="main.c" />
+    <file file_name="main.h" />
+  </project>
+</solution>
