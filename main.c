@@ -74,6 +74,16 @@ FRESULT SD_CardFileRead(void){
 		printf("--- Starting file reading... \n");
 
 		//res = f_read(&file, readData_8, (uint16_t)file_info.fsize, &BytesReaded);	// read whole file data. file must be less than array readData_8[] 
+		
+		// проверка сколько секторов нужно нам читать, чтобы весь текст из файла вычитать.
+		
+		// сделать ограничение по 2048 байт = 4 сектора, чтобы сильно длинные файлы читались по частям и 
+		// отправлялись по UART1.
+		 
+		// создать нужный по размеру массив для хранения данных
+		// считать несколько секторов, чтобы весь текст файла считался.
+
+
 		res = f_read(&file, readData_8, (uint16_t)BUFFER_SIZE, &BytesReaded);	// read one sector. BUFFER_SIZE = sector_size = 512 bytes 
 		if(res == FR_OK){
 			printf("+++ File reading successfully! Readed string: \n");
@@ -155,17 +165,25 @@ int main(){
 
 		
 		res = SD_CardMount();
+
+		// чтение файла с карты памяти
 		if (res == FR_OK){
 			res = SD_CardFileRead();
-
-			res = SD_CardCreateFile();
-			
 		}
 		else{
 			printf("--- SD-card mounting failed... \n");
 		}
 
-    	
+		// создание нового файла на карте и запись в него тестовых данных
+		if(res == FR_OK) {
+			res = SD_CardCreateFile();
+		}
+		else{
+			printf("--- ERROR reading file on SD-card \n");
+			printf("--- New file was NOT CREATED on SD-card \n");
+
+
+		}
 	}
 	else{
 		printf("--- SD-card not found!! ---- \n");
