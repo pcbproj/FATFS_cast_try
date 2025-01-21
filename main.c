@@ -4,18 +4,13 @@
 
 
 /*******************************************************************/
-#define BUFFER_SIZE		(uint16_t)512	// read write one sector size in bytes 
-
-
-
-
-uint32_t writeBuffer[BUFFER_SIZE]; 
-uint32_t readBuffer[BUFFER_SIZE];
+#define BUFFER_SIZE					(uint16_t)512						// one sector size in bytes 
+#define MAX_BYTES_TO_READ			(uint16_t)2048						// maximum array length for file data reading
+#define MAX_NUM_SECTORS_TO_READ		(MAX_BYTES_TO_READ / BUFFER_SIZE)	// maximum sectors number for file data reading
 
 
 uint8_t readData_8[BUFFER_SIZE];
 
-uint8_t writeBuffer_bytes[BUFFER_SIZE];
 
 FATFS fs;
 FRESULT res;
@@ -45,16 +40,10 @@ FRESULT SD_CardMount(void){
 FRESULT SD_CardFileRead(void){
 	
 	const char file_name[12] = "fstest00.txt"; 
-
-	uint8_t readed_data[128];
-	unsigned int BytesToRead = 8;
+	uint8_t readed_data[MAX_BYTES_TO_READ];
 	unsigned int BytesReaded = 0;
+
  
-	//res = f_opendir(&dir, "/");
-	//if(res != FR_OK){
-	//	printf("--- Opening Root directory FAILED. ErrorCode = %d \n" , res);
-	//	return res;
-	//}
 	
 	printf("--- Checking for existed file %s on SD-card \n", file_name);
 	res = f_stat(file_name, &file_info);
@@ -72,29 +61,57 @@ FRESULT SD_CardFileRead(void){
 		printf("+++ opening file complete sucessfully. ErrorCode res = %d \n", res);
 		
 		printf("--- Starting file reading... \n");
-
-		//res = f_read(&file, readData_8, (uint16_t)file_info.fsize, &BytesReaded);	// read whole file data. file must be less than array readData_8[] 
 		
-		// проверка сколько секторов нужно нам читать, чтобы весь текст из файла вычитать.
 		
-		// сделать ограничение по 2048 байт = 4 сектора, чтобы сильно длинные файлы читались по частям и 
-		// отправлялись по UART1.
-		 
-		// создать нужный по размеру массив для хранения данных
-		// считать несколько секторов, чтобы весь текст файла считался.
+		// проверка сколько секторов нужно считать, чтобы весь текст из файла вычитать.
+		// ограничение по 2048 байт = 4 сектора
 
-
-		res = f_read(&file, readData_8, (uint16_t)BUFFER_SIZE, &BytesReaded);	// read one sector. BUFFER_SIZE = sector_size = 512 bytes 
-		if(res == FR_OK){
-			printf("+++ File reading successfully! Readed string: \n");
-			usart1_send(readData_8, BytesReaded);
-			printf("\n--- Readed bytes number = %d \n" , BytesReaded );
-			f_close(&file);
+		// чтение всего файла целиком, т.к. размер файла меньше размера массива для считваемых данных
+		if( ( (uint16_t)file_info.fsize ) < MAX_BYTES_TO_READ ){
+			res = f_read(&file, readed_data, (uint16_t)file_info.fsize, &BytesReaded);	// read whole file data. file zise less than array length 
+			
+			if(res == FR_OK){
+				printf("\n\n+++ File reading successfully! Readed string: \n");
+				usart1_send(readed_data, BytesReaded);
+				printf("\n\n--- Readed bytes number = %d \n" , BytesReaded );
+				f_close(&file);
+			}
 		}
 		else{
-			printf("--- reading file FAILED! ErrorCode = %d \n", res);  // return error code = 9 (FR_INVALID_OBJECT)
-			f_close(&file);
-			return res;
+			
+			uint16_t reading_iterations = (uint16_t)file_info.fsize / MAX_BYTES_TO_READ;
+			uint16_t bytes_left_to_read = (uint16_t)file_info.fsize % MAX_BYTES_TO_READ;	// number of bytes left to read. 1 to 2047 bytes 
+			uint16_t current_itreation = 0;
+			
+			// чтение файла по 2048 байт, по 4 сектора
+			printf("--- File reading long data! Readed string: \n");
+			while (current_itreation < reading_iterations){
+				res = f_read(&file, readed_data, MAX_BYTES_TO_READ, &BytesReaded);
+				if(res == FR_OK){
+					usart1_send(readed_data, BytesReaded); // отправка в USART1 строк по 2048 байт сразу после чтения.
+				}
+				current_itreation++;
+			}
+
+			// вычитывание оставшихся байтов, которые не были считаны в итерациях по 2048 байт. Это кол-во байтов от 1 до 2047
+			if (res == FR_OK){
+				if(bytes_left_to_read > 0){
+					res = f_read(&file, readed_data, bytes_left_to_read, &BytesReaded);
+					if(res == FR_OK){
+						usart1_send(readed_data, BytesReaded);	// отправка в USART1 оставшейся строки длинной от 1 до 2047 байт
+					}
+				}
+			}
+			
+			if (res == FR_OK){
+				printf("\n\n+++ Long file was readed successfully!\n");
+				printf("+++ was readed %d bytes successfully!\n", (uint16_t)file_info.fsize);
+			}
+			else{
+				printf("--- reading file FAILED! ErrorCode = %d \n", res);  
+				f_close(&file);
+				return res;
+			}
 		}
 	}	
 	else{
@@ -118,8 +135,9 @@ FRESULT SD_CardCreateFile(void){
 		printf("+++ file %s was created successfully \n", fl_name);
 		printf("+++ Writing test string into file %s ... \n", fl_name);
 
-		uint8_t *file_text =  malloc(128 * sizeof(uint8_t));	// reserve memory for string file_text
-		sprintf(file_text, "Test string for file creation!!! \n");	// write test string into string file_text
+		uint8_t *file_text =  malloc(128 * sizeof(uint8_t));		// reserve memory for string file_text
+		sprintf(file_text, "Test string for file creation!!! \n");		// write test string into string file_text
+
 		res = f_write(&file, file_text, strlen(file_text), &WritedBytes); // write string file_text into file
 
 		if (res != FR_OK) printf("--- Writing into file %s FAILED! Error code = %d \n", fl_name, res);
@@ -153,20 +171,21 @@ int main(){
 	SD_ErrorState = SD_Init();
 
 	if (SD_ErrorState == SD_OK) {
-	
-		printf("--- SD-card Getting information! ---- \n");
+		
     	// Получаем информацию о карте
+		printf("--- SD-card Getting information! ---- \n");
     	SD_GetCardInfo(&SDCardInfo);
     	
-		printf("--- SD-card Selection! ---- \n");
+		
     	// Выбор карты и настройка режима работы
+		printf("--- SD-card Selection! ---- \n");
     	SD_SelectDeselect((uint32_t) (SDCardInfo.RCA << 16));
     	SD_SetDeviceMode(SD_POLLING_MODE);
 
 		
 		res = SD_CardMount();
 
-		// чтение файла с карты памяти
+		// чтение файла с карты памяти, если она инициализировалась верно.
 		if (res == FR_OK){
 			res = SD_CardFileRead();
 		}
@@ -174,7 +193,7 @@ int main(){
 			printf("--- SD-card mounting failed... \n");
 		}
 
-		// создание нового файла на карте и запись в него тестовых данных
+		// создание нового файла на карте и запись в него тестовой строки
 		if(res == FR_OK) {
 			res = SD_CardCreateFile();
 		}
